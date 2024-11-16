@@ -10,6 +10,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { SignInDto } from './dto/sign-in.dto';
 
 @Controller('user')
 export class UserController {
@@ -38,5 +39,15 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.delete(id);
+  }
+
+  @Post('sign-in')
+  signIn(@Body() credentials: SignInDto) {
+    return this.userService.signIn(credentials);
+  }
+
+  @Post('sign-up')
+  signUp(@Body() createUserDto: CreateUserDto) {
+    return this.userService.signUp(createUserDto);
   }
 }
