@@ -1,5 +1,6 @@
 import 'package:chess_game_ies/screens/auth/sign_in.dart';
 import 'package:chess_game_ies/screens/auth/sign_up.dart';
+import 'package:chess_game_ies/screens/home.dart';
 import 'package:chess_game_ies/screens/intro.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
