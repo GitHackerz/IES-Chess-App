@@ -1,7 +1,7 @@
+import 'package:chess_game_ies/screens/auth/Forgot_Password.dart';
 import 'package:chess_game_ies/screens/auth/sign_in.dart';
 import 'package:chess_game_ies/screens/auth/sign_up.dart';
 import 'package:chess_game_ies/screens/home.dart';
-import 'package:chess_game_ies/screens/intro.dart';
 import 'package:flutter/material.dart';
 
 import 'core/routes.dart';
@@ -31,11 +31,12 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       routes: {
-        Routes.intro: (context) => const IntroScreen(),
         Routes.signIn: (context) => const SignInScreen(),
         Routes.signUp: (context) => const SignUpScreen(),
+        Routes.home: (context) => const HomeScreen(),
+        Routes.forgotpwd: (context) => const ForgotPasswordScreen(),
       },
-      initialRoute: Routes.intro,
+      initialRoute: Routes.signIn,
     );
   }
 }
