@@ -10,9 +10,6 @@ export enum GameStatus {
 
 @Schema()
 export class Game extends Document {
-  @Prop()
-  name: string;
-
   @Prop({
     default: 0,
   })

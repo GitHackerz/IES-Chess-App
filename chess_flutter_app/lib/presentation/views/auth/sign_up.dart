@@ -1,17 +1,17 @@
-import 'package:chess_game_ies/core/routes.dart';
 import 'package:flutter/material.dart';
 
-import '../../widgets/password_field.dart';
-import '../../widgets/social_buttons.dart';
+import '../../../core/routes.dart';
+import '../../../presentation/widgets/password_field.dart';
+import '../../../presentation/widgets/social_buttons.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,17 +28,18 @@ class _SignInScreenState extends State<SignInScreen> {
                 color: const Color(0xFFD6DFFF),
                 borderRadius: BorderRadius.circular(30.0),
               ),
-              child: Image.asset("assets/images/signin.png", height: 70.0),
+              child: Image.asset("assets/images/signup.png", height: 70.0),
             ),
-            const Text("Sign In",
+            const Text("Sign Up",
                 style: TextStyle(
                     fontSize: 32.0,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF2A4ECA))),
             const Text(
-              "Welcome back! Sign in to continue.",
+              "Create an account to continue.",
               style: TextStyle(fontSize: 14, color: Color(0xFF61677D)),
             ),
+            const SizedBox(height: 20.0),
             Row(
               children: [
                 Expanded(
@@ -83,6 +84,16 @@ class _SignInScreenState extends State<SignInScreen> {
             const SizedBox(height: 20.0),
             TextField(
               decoration: InputDecoration(
+                hintText: "Full Name",
+                prefixIcon: const Icon(Icons.person),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20.0),
+            TextField(
+              decoration: InputDecoration(
                 hintText: "Email",
                 prefixIcon: const Icon(Icons.email),
                 border: OutlineInputBorder(
@@ -90,36 +101,20 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 30.0),
+            const SizedBox(height: 20.0),
             const PasswordField(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "Forgot Password?",
-                    style: TextStyle(
-                        color: Color(0xFF7C8BA0),
-                        fontWeight: FontWeight.normal),
-                  ),
-                ),
-              ],
-            ),
             const SizedBox(height: 20.0),
             Row(
               children: [
                 Expanded(
                   child: FilledButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, Routes.main);
-                      },
+                      onPressed: () {},
                       style: ButtonStyle(
                         padding: WidgetStateProperty.all<EdgeInsets>(
                             const EdgeInsets.all(15.0)),
                       ),
                       child: const Text(
-                        "Sign In",
+                        "Sign Up",
                         style: TextStyle(
                           color: Color(0xFFFFFFFF),
                           fontSize: 16.0,
@@ -133,15 +128,15 @@ class _SignInScreenState extends State<SignInScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  "Don't have an account?",
+                  "Already have an account?",
                   style: TextStyle(color: Color(0xFF7C8BA0)),
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, Routes.signUp);
+                    Navigator.pushNamed(context, Routes.signIn);
                   },
                   child: const Text(
-                    "Sign Up",
+                    "Sign In",
                     style: TextStyle(
                         color: Color(0xFF2A4ECA), fontWeight: FontWeight.bold),
                   ),

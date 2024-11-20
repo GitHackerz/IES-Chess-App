@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
+import { GameModule } from '../game/game.module';
 
 dotenv.config();
 
