@@ -1,159 +1,175 @@
-### Updated Documentation for Dynamic Chess Timer and Match List
+# Chess Timer App Documentation
+
+## **1. Authentication Screens**
+
+### **1.1 SignInScreen**
+
+#### Purpose:
+The `SignInScreen` is used for user authentication, allowing users to sign in using their credentials or social media accounts.
+
+#### Components:
+- **Logo**: Displays the app logo.
+- **Sign-in Text**: Welcomes the user.
+- **Social Media Buttons**: Allows sign-in with Google or Facebook using the `SocialButton` widget.
+- **Email and Password Fields**: Input fields for credentials, including the custom `PasswordField`.
+- **Forgot Password Link**: Navigates users to the `ForgotPasswordScreen`.
+- **Sign In Button**: Authenticates the user and navigates to the `ChessMatchListScreen` upon success.
+- **Sign Up Link**: Navigates to the `SignUpScreen`.
 
 ---
 
-#### **ChessTimerScreen**
+### **1.2 SignUpScreen**
 
-**Purpose**:  
-The `ChessTimerScreen` is designed to manage dynamic chess timers for two players. It allows for real-time countdowns, alternating turns between Player 1 and Player 2, with automatic timer switching when a player finishes their turn.
+#### Purpose:
+The `SignUpScreen` allows users to create a new account.
 
-**Key Updates**:
-- **Dynamic Timer Handling**: The timers for both players are now dynamic, with the ability to adjust the starting time (e.g., can easily switch from 5 minutes to any other duration).
-- **Turn Management**: Instead of hard-coding the players, it can dynamically switch between two players based on the game flow.
+#### Components:
+- **Logo and Title**: Prompts users to create an account.
+- **Text Fields**: Includes `CTextField` and `CPasswordField` for input.
+- **Create Account Button**: Triggers sign-up logic and navigates to the `ChessMatchListScreen`.
+- **Already Have an Account Link**: Navigates to the `SignInScreen`.
 
-**State Management**:
-- The `player1Time` and `player2Time` variables are dynamically updated based on game progress.
-- Timers are initiated and stopped using `Timer.periodic` with safe null checks to prevent errors.
-- Player names and times are updated dynamically when the player switches turns.
+---
 
-**Dynamic Timer Behavior**:
+### **1.3 ForgotPasswordScreen**
+
+#### Purpose:
+The `ForgotPasswordScreen` allows users to recover their account via email.
+
+#### Components:
+- **Logo**: Indicates the reset process.
+- **Email Input Field**: Accepts the user’s email.
+- **Continue Button**: Sends the reset request to the backend.
+- **Back to Sign In Button**: Navigates back to the `SignInScreen`.
+
+---
+
+### **1.4 Backend Integration for Authentication**
+
+- **Sign Up**: The app sends user details (`name`, `email`, `password`) to the backend (`/user/sign-up`) to create a new account.
+- **Sign In**: Credentials are sent to the backend (`/user/sign-in`) to authenticate the user.
+- **Forgot Password**: Sends the email to the backend (`/user/forgot-password`) to trigger a reset link.
+
+---
+
+## **2. Chess Timer Functionality**
+
+### **2.1 ChessTimerScreen**
+
+#### Purpose:
+Manages the chess timer for two players.
+
+#### Dynamic Features:
+- **Timers**: Tracks remaining time dynamically for both players.
+- **Player Turns**: Switches between players and starts/stops the appropriate timer.
+- **Dynamic Updates**: Timers decrement in real-time until paused or expired.
+
+#### Backend Integration:
+- Timer results (e.g., match duration) can be uploaded to the backend using a POST request to `/matches`.
+
+---
+
+### **2.2 Key Components:**
+
+- **Player 1 Timer**: Counts down the time for Player 1.
+- **Player 2 Timer**: Counts down the time for Player 2.
+- **Switch Turns**: Switches control between players.
+- **Dynamic Time Display**: Formats the time as `MM:SS`.
+
+---
+
+### **2.3 Dynamic Code Example**
+
 ```dart
-// Dynamically start the timer for the current player
-void startTimer(int playerIndex) {
-  Timer? currentPlayerTimer;
-  int *currentPlayerTime;
-  
-  if (playerIndex == 1) {
-    currentPlayerTime = player1Time;
-    currentPlayerTimer = _player1Timer;
-  } else {
-    currentPlayerTime = player2Time;
-    currentPlayerTimer = _player2Timer;
-  }
-
-  currentPlayerTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-    setState(() {
-      if (currentPlayerTime > 0) {
-        currentPlayerTime--;
-      } else {
-        currentPlayerTimer?.cancel();
-      }
-    });
-  });
-}
+ElevatedButton(
+  onPressed: isPlayer1Turn ? null : switchToPlayer1,
+  child: Text('Player 1 Timer'),
+),
+ElevatedButton(
+  onPressed: !isPlayer1Turn ? null : switchToPlayer2,
+  child: Text('Player 2 Timer'),
+),
+Text(
+  'Player 1 Time: ${formatTime(player1Time)}',
+  style: TextStyle(fontSize: 30),
+),
+Text(
+  'Player 2 Time: ${formatTime(player2Time)}',
+  style: TextStyle(fontSize: 30),
+),
 ```
 
 ---
 
-#### **ChessMatchListScreen**
+## **3. Match History**
 
-**Purpose**:  
-The `ChessMatchListScreen` dynamically fetches and displays a list of past matches. The data shown (e.g., player names, scores, dates) can be fetched from a database or API to keep the list up-to-date and reflect real-time match history.
+### **3.1 ChessMatchListScreen**
 
-**Key Updates**:
-- **Dynamic Match List**: The list of chess matches is now dynamic, which means it can easily integrate with a backend or local data source to fetch match data.
-- **Navigation to Match Details**: Users can navigate to a detailed match screen, which will be populated with data from the list.
+#### Purpose:
+Displays a list of previous chess matches.
 
-**Dynamic Data Handling**:
+#### Features:
+- **Dynamic Match List**: Data fetched dynamically from the backend (`/matches`).
+- **Drawer Menu**: Provides navigation to other screens (e.g., Home, Game Timer, AI Chatbot).
+- **Match Details**: Includes player names, scores, date, and time for each match.
+
+---
+
+### **3.2 Backend Integration**
+
+- **Fetch Matches**: Sends a GET request to `/matches` to retrieve a list of previous matches.
+- **Dynamic Data Example**:
+  ```dart
+  Future<List<Match>> fetchMatches() async {
+    final response = await http.get(Uri.parse('https://api.example.com/matches'));
+    return parseMatches(response.body);
+  }
+  ```
+
+---
+
+### **3.3 Dynamic Code Example**
+
 ```dart
-class ChessMatchListScreen extends StatelessWidget {
-  final List<ChessMatch> chessMatches;  // Dynamic list of matches
-
-  const ChessMatchListScreen({Key? key, required this.chessMatches}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Chess Matches', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), backgroundColor: Colors.brown),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: chessMatches.length,
-        itemBuilder: (context, index) {
-          return ChessMatchTile(match: chessMatches[index]);
-        },
-      ),
+ListView.builder(
+  itemCount: matches.length,
+  itemBuilder: (context, index) {
+    final match = matches[index];
+    return ChessMatchTile(
+      playerName: match.playerName,
+      aiName: match.aiName,
+      score: match.score,
+      matchDate: match.date,
+      matchTime: match.time,
     );
-  }
-}
-
-class ChessMatchTile extends StatelessWidget {
-  final ChessMatch match;
-
-  const ChessMatchTile({Key? key, required this.match}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      elevation: 5,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            const Icon(Icons.games, size: 40, color: Color(0xFF2A4ECA)),
-            const SizedBox(width: 12.0),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('${match.playerName} vs ${match.aiName}', style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 5.0),
-                  Text('Score: ${match.score}', style: const TextStyle(fontSize: 16.0, color: Color(0xFF61677D))),
-                  const SizedBox(height: 5.0),
-                  Text('Date: ${match.matchDate}', style: const TextStyle(fontSize: 14.0, color: Color(0xFF61677D))),
-                  const SizedBox(height: 5.0),
-                  Text('Time: ${match.matchTime}', style: const TextStyle(fontSize: 14.0, color: Color(0xFF61677D))),
-                ],
-              ),
-            ),
-            IconButton(icon: const Icon(Icons.arrow_forward_ios), onPressed: () {
-              // Navigate to match details screen with the selected match
-            }),
-          ],
-        ),
-      ),
-    );
-  }
-}
-```
-
-**Match Model Class**:
-To handle dynamic data, we introduced a `ChessMatch` model:
-```dart
-class ChessMatch {
-  final String playerName;
-  final String aiName;
-  final String score;
-  final String matchDate;
-  final String matchTime;
-
-  ChessMatch({
-    required this.playerName,
-    required this.aiName,
-    required this.score,
-    required this.matchDate,
-    required this.matchTime,
-  });
-}
-```
-
-**Dynamic Match Data**:
-Instead of hardcoding matches, the match data can now be populated dynamically:
-```dart
-List<ChessMatch> chessMatches = [
-  ChessMatch(playerName: 'Player 1', aiName: 'AI Robot', score: '1 - 0', matchDate: '2024-11-20', matchTime: '12:00 PM'),
-  ChessMatch(playerName: 'Player 2', aiName: 'AI Robot', score: '0 - 1', matchDate: '2024-11-19', matchTime: '3:00 PM'),
-  // More matches
-];
+  },
+),
 ```
 
 ---
 
-### **Key Benefits of the Dynamic Approach**:
-1. **Scalability**: Easily integrates with a backend or API to fetch real-time data.
-2. **Flexibility**: Both the chess timer and match list are adaptable to different settings, such as game length or player configurations.
-3. **Real-Time Updates**: Match results and timers update dynamically, ensuring that the app reflects the current state of the game and match history.
+## **4. Routing**
 
-### **Conclusion**:
-With these updates, the app now supports dynamic data for both the chess timers and match list, providing a flexible and scalable foundation for future features, such as persistent game history, user profiles, and more.
+### **Navigation Between Screens:**
+- `SignInScreen` → `ChessMatchListScreen`: Triggered after successful login.
+- `ChessMatchListScreen` → `ChessTimerScreen`: Allows users to start a new game.
+- Routes are defined dynamically for seamless navigation.
+
+---
+
+## **5. General App Architecture**
+
+### **5.1 Widgets**
+- Custom widgets (`SocialButton`, `CTextField`, `CPasswordField`, `ChessMatchTile`) ensure reusable and consistent UI.
+
+### **5.2 State Management**
+- View models manage screen states dynamically, with inputs validated in real-time.
+
+### **5.3 Backend Integration**
+- Authentication (`/user` endpoints) and match history (`/matches`) are handled with secure API calls.
+
+---
+
+## **Conclusion**
+
+The Chess Timer application combines robust features, dynamic interfaces, and backend integration to deliver a seamless experience for chess enthusiasts. Its modular architecture ensures scalability and maintainability, with potential for future enhancements like AI integration or leaderboard functionality.
